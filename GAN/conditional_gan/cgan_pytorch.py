@@ -68,14 +68,16 @@ params = G_params + D_params
 
 def reset_grad():
     for p in params:
-        p.grad.data.zero_()
+        if p.grad is not None:
+            data = p.grad.data
+            p.grad = Variable(data.new().resize_as_(data).zero_())
 
 
 G_solver = optim.Adam(G_params, lr=1e-3)
 D_solver = optim.Adam(D_params, lr=1e-3)
 
-ones_label = Variable(torch.ones(mb_size))
-zeros_label = Variable(torch.zeros(mb_size))
+ones_label = Variable(torch.ones(mb_size, 1))
+zeros_label = Variable(torch.zeros(mb_size, 1))
 
 
 for it in range(100000):
